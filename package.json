@@ -1,6 +1,6 @@
 {
   "name": "mapeador",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Lectura e interpretación de mapas de Tiled en Phaser",
   "main": "index.js",
   "scripts": {

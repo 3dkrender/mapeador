@@ -1,25 +1,41 @@
+/**
+ * Los mapas se crean en Tiled con capas que serán interpretadas por grupos
+ * 
+ * Ground: Todas las capas de background (suelo)
+ * Over: Todas las capas por encima del nivel del jugador (ToDo)
+ * Block: Capas de bloqueo (ToDo)
+ * Events: Capas con eventos (ToDo)
+ * 
+ * Animaciones: Capas con tiles animados. (ToDo)
+ */
 class Quest extends Phaser.Scene {
     constructor() {
         super('Quest');
     }
-
     init() {
         var Quest = this;
-
+        /**
+         * Para la primera versión del programa voy a utilizar un objeto que contiene la 
+         * información del mapa. 
+         * En una futura versión trataremos de extraer de forma automátizada toda esta
+         * información directamente del json exportado por Tiled
+         * 
+         * Se incluye la inforación de las capas referidas al diseño del mapa: Ground y Over.
+         */
         Quest.mapa = {
             "key": "mazmorra",
             "file": "mazmorra.json",
-            "inicio": {
+            "inicio": {         // Posición inicial de Player
                 "x": 100,
                 "y": 725
             },
-            "spritesheets": [{
+            "spritesheets": [{      // Array con los spritesheets utilizados en el mapa
                 "key": "suelos",
                 "file": "suelos.png",
                 "width": 32,
                 "height": 32
             }],
-            "Ground": [{
+            "Ground": [{            // Array con las capas de "suelo" {nombre de capa, [spritesheets empleados]}
                 "key": "suelo1",
                 "sheets": [
                     "suelos"
@@ -56,6 +72,12 @@ class Quest extends Phaser.Scene {
                 frameHeight: sprites.height
             });
         });
+        /**
+         * Brujita es un personaje creado con la herramienta freeware "Character Maker Software"
+         * https://www.dropbox.com/s/4g9jn0i91d89ohc/Character_Creator.zip?dl=0
+         * 
+         * Se incluye un "player" en el proyecto para testear el mapa
+         */
         Quest.load.spritesheet('brujitaWalk', 'assets/brujita.png', {
             frameWidth: 128,
             frameHeight: 128
@@ -69,15 +91,18 @@ class Quest extends Phaser.Scene {
         var Quest = this;
         Quest.bgSheets = [];
         Quest.bgLayers = [];
+        // Crear mapa
         Quest.tileMap = Quest.make.tilemap({
             key: Quest.mapa.key
         });
+        // Cargar tilesets para las capas de suelo
         Quest.mapa.Ground.forEach((layer) => {
             layer.sheets.forEach((sheet) => {
-                if (Quest.bgSheets.every(x => x.name != sheet))
+                if (Quest.bgSheets.every(x => x.name != sheet)) // No cargar tilesets ya cargados
                     Quest.bgSheets.push(Quest.tileMap.addTilesetImage(sheet));
             });
         });
+        // Generar las capas estáticas del suelo
         Quest.mapa.Ground.forEach((layer) => {
             Quest.bgLayers.push(Quest.tileMap.createStaticLayer(layer.key, Quest.bgSheets, 0, 0));
         });
@@ -96,6 +121,10 @@ class Quest extends Phaser.Scene {
         Quest.cursors = Quest.input.keyboard.createCursorKeys();
     }
 
+    /**
+     * La función update() se emplea básicamente para mover el Player; no afecta al 
+     * sistema de mapeado
+     */
     update() {
         var Quest = this;
         Quest.velocidad = 150;
