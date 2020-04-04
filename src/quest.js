@@ -66,6 +66,14 @@ class Quest extends Phaser.Scene {
                 ]
             }
             ],
+            "Block": [
+                {
+                    "key": "bloqueo",
+                    "sheets": [
+                        "suelos"
+                    ]
+                }
+            ],
             "Animaciones": [{
                 "key": "animacion",
                 "sheets": [
@@ -106,6 +114,8 @@ class Quest extends Phaser.Scene {
         Quest.bgLayers = [];
         Quest.Animaciones = [];
         Quest.animaLayers = [];
+        Quest.bloqueo = [];
+        Quest.bloqueoLayers = [];
         // Crear mapa
         Quest.tileMap = Quest.make.tilemap({
             key: Quest.mapa.key
@@ -118,6 +128,12 @@ class Quest extends Phaser.Scene {
                     Quest.bgSheets.push(Quest.tileMap.addTilesetImage(sheet));
             });
         });
+        // Cargar tilesets para capas de bloqueo
+        Quest.mapa.Block.forEach((layer) => {
+            layer.sheets.forEach((sheet) => {
+                Quest.bloqueo.push(Quest.tileMap.addTilesetImage(sheet));
+            });
+        });
         // cargar tilesets para las capas de animación
         Quest.mapa.Animaciones.forEach((layer) => {
             layer.sheets.forEach((sheet) => {
@@ -128,6 +144,10 @@ class Quest extends Phaser.Scene {
         // Generar las capas estáticas del suelo
         Quest.mapa.Ground.forEach((layer) => {
             Quest.bgLayers.push(Quest.tileMap.createStaticLayer(layer.key, Quest.bgSheets, 0, 0));
+        });
+        // Generar capa estática de bloqueo
+        Quest.mapa.Block.forEach((layer) => {
+            Quest.bloqueoLayers.push(Quest.tileMap.createStaticLayer(layer.key, Quest.bloqueo, 0, 0));
         });
         // Generar capas dinámicas para animaciones
         Quest.mapa.Animaciones.forEach((layer) => {
@@ -146,12 +166,28 @@ class Quest extends Phaser.Scene {
         Quest.physics.world.bounds.setTo(0, 0, Quest.tileMap.widthInPixels, Quest.tileMap.heightInPixels);
         Quest.player.body.setCollideWorldBounds(true);
 
+        /**
+         * Activar bloqueos para el personaje
+         * 
+         * El personaje escogido para este ejemplo tiene mucho espacio lateral en cada frame de su spritesheet
+         * por lo que los bloqueos pueden resultar no muy realistas.
+         * 
+         * En la capa de bloqueo podemos pintar con cualquier tile por donde queremos activar los bloqueos.
+         */
+        Quest.bloqueoLayers.forEach((layer) => {
+            layer.setVisible(false);              // Ocultamos la capa. Por eso da igual con qué pintemos los bloqueos
+            layer.setCollisionByExclusion([-1]);  // Cualquier valor en la capa que sea diferente de '-1' bloquea  
+            Quest.physics.add.collider(Quest.player, layer);    // Activamos el collider
+        });
+
         // Actilet cámara de seguimiento
         Quest.cameras.main.startFollow(Quest.player, true);
         Quest.cameras.main.setBounds(0, 0, Quest.tileMap.widthInPixels, Quest.tileMap.heightInPixels);
 
         // Actilet cursores
         Quest.cursors = Quest.input.keyboard.createCursorKeys();
+
+        console.log(Quest.tileMap)
     }
 
     /**
