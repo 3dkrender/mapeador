@@ -18,7 +18,8 @@ const config = {
         "arcade": {
             gravity: {
                 y: 0
-            }
+            },
+            debug: true
         }
     },
     scene: [
