@@ -100,12 +100,12 @@ class Quest extends Phaser.Scene {
          * Se incluye un "player" en el proyecto para testear el mapa
          */
         Quest.load.spritesheet('brujitaWalk', 'assets/brujita.png', {
-            frameWidth: 128,
-            frameHeight: 128
+            frameWidth: 64,
+            frameHeight: 96
         });
         Quest.load.spritesheet('brujita_idle', 'assets/brujita_idle1.png', {
-            frameHeight: 128,
-            frameWidth: 128
+            frameWidth: 64,
+            frameHeight: 96
         });
     }
     create() {
